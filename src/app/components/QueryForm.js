@@ -9,12 +9,12 @@ export default function QueryForm({ callback, loadingToggler }) {
     e.preventDefault();
     loadingToggler();
     const playerResp = await fetch(
-      `http://localhost:3000/api/search_sc?q=${query.split(" ").join("%20")}`
+      `/api/search_sc?q=${query.split(" ").join("%20")}`
     );
     const playerRes = await playerResp.json();
     console.log(playerResp);
     const lyricsResp = await fetch(
-      `http://localhost:3000/api/search_genius?q=${query
+      `/api/search_genius?q=${query
         .split(" ")
         .join("%20")}`
     );
