@@ -24,6 +24,8 @@ export default function Home() {
         }}
         embedCodesSetter={(x) => setPlayerEmbedCodes(x)}
         playerIndexSetter={(x) => setPlayerIndex(x)}
+        lyricsInfoSetter={(x) => setLyricsInfo(x)}
+        lyricsIndexSetter={(x) => setLyricsIndex(x)}
       />
       {isLoading && (
         <div className="w-full mt-4 text-center text-xl font-semibold text-gray-400 animate-bounce">
@@ -31,7 +33,7 @@ export default function Home() {
         </div>
       )}
       {!isLoading && <SCPlayer embedCode={playerEmbedCodes[playerIndex]} />}
-      {playerEmbedCodes.length != 0 && playerIndex > 0 && (
+      {playerEmbedCodes.length != 0 && playerIndex > 0 && !isLoading && (
         <button
           className="rounded-md bg-gray-200 m-2 p-2"
           onClick={() => setPlayerIndex(playerIndex - 1)}
@@ -40,7 +42,8 @@ export default function Home() {
         </button>
       )}
       {playerEmbedCodes.length != 0 &&
-        playerIndex < playerEmbedCodes.length - 1 && (
+        playerIndex < playerEmbedCodes.length - 1 &&
+        !isLoading && (
           <button
             className="rounded-md bg-gray-200 m-2 p-2"
             onClick={() => {
@@ -51,10 +54,10 @@ export default function Home() {
           </button>
         )}
       <section ref={lyrContRef}></section>
-      {/* {lyricsInfo.length != 0 && (
+      {lyricsInfo.length != 0 && !isLoading && (
         <LyricsContainer info={lyricsInfo[lyricsIndex]} />
       )}
-      {lyricsInfo.length != 0 && lyricsIndex > 0 && (
+      {lyricsInfo.length != 0 && lyricsIndex > 0 && !isLoading && (
         <button
           className="rounded-md bg-gray-200 m-2 p-2"
           onClick={() => {
@@ -65,17 +68,19 @@ export default function Home() {
           Show Prev
         </button>
       )}
-      {lyricsInfo.length != 0 && lyricsIndex < lyricsInfo.length - 1 && (
-        <button
-          className="rounded-md bg-gray-200 m-2 p-2"
-          onClick={() => {
-            setLyricsIndex(lyricsIndex + 1);
-            lyrContRef.current.scrollIntoView({ behavior: "smooth" });
-          }}
-        >
-          Show Next
-        </button>
-      )} */}
+      {lyricsInfo.length != 0 &&
+        lyricsIndex < lyricsInfo.length - 1 &&
+        !isLoading && (
+          <button
+            className="rounded-md bg-gray-200 m-2 p-2"
+            onClick={() => {
+              setLyricsIndex(lyricsIndex + 1);
+              lyrContRef.current.scrollIntoView({ behavior: "smooth" });
+            }}
+          >
+            Show Next
+          </button>
+        )}
     </div>
   );
 }

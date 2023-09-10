@@ -1,10 +1,10 @@
 import { NextResponse } from "next/server";
-const axios = require("axios");
-const { JSDOM } = require("jsdom");
 
 export async function GET(request) {
-  let query = new URL(request.url).search;
-  console.log(query);
+  let reqUrl = new URL(request.url);
+  let query = reqUrl.search;
+  let parsedQuery = reqUrl.searchParams.get("q");
+  console.log(query, parsedQuery);
   // get lyrics link for the song with Genius API
   const gAPIres = await fetch(`https://api.genius.com/search${query}`, {
     headers: {
@@ -21,25 +21,33 @@ export async function GET(request) {
         let title = hit.result.title;
         let artist = hit.result.artist_names;
         let trackURL = hit.result.path;
-        const trackPageRes = await axios.get(`https://genius.com${trackURL}`);
-        const trackPageDOM = new JSDOM(trackPageRes.data);
-        const lyrConts = trackPageDOM.window.document.querySelectorAll(
-          "div[data-lyrics-container='true']"
-        );
-        let lyrics = [];
-        for (let i = 0; i < lyrConts.length; i++) {
-          let scrapedLyrics = lyrConts[i].innerHTML.match(/>[^<]+</g);
-          if (scrapedLyrics) {
-            scrapedLyrics.forEach((line) => {
-              lyrics.push(line.substring(1, line.length - 1));
-            });
-          }
-        }
-        const newRes = { title, artist, lyrics };
-        console.log(newRes);
-        result.push(newRes);
+        let fullTitle = hit.result.full_title.toLowerCase();
+        console.log(title, artist);
+        let macthes = [];
+        parsedQuery.split(" ").forEach((word) => {
+          macthes.push(fullTitle.match(new RegExp(`${word.toLowerCase()}`)));
+        });
+        if (macthes.filter((x) => x === null).length != macthes.length) {
+          console.log(macthes);
+          result.push({title, artist, url: trackURL})
+        } else console.log("no matches");
       }
     }
   }
   return NextResponse.json({ result }, { status: 200 });
 }
+
+// const trackPageRes = await axios.get(`https://genius.com${trackURL}`);
+// const trackPageDOM = new JSDOM(trackPageRes.data);
+// const lyrConts = trackPageDOM.window.document.querySelectorAll(
+//   "div[data-lyrics-container='true']"
+// );
+// let lyrics = [];
+// for (let i = 0; i < lyrConts.length; i++) {
+//   let scrapedLyrics = lyrConts[i].innerHTML.match(/>[^<]+</g);
+//   if (scrapedLyrics) {
+//     scrapedLyrics.forEach((line) => {
+//       lyrics.push(line.substring(1, line.length - 1));
+//     });
+//   }
+// }
